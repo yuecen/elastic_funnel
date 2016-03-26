@@ -1,0 +1,119 @@
+import pandas as pd
+from elasticsearch_data import LogData
+
+pd.set_option('display.width', 1000)
+
+
+class FunnelData(LogData):
+
+    def __init__(self, log_data=None):
+        if not log_data:
+            raise ValueError("log data set cannot be empty.")
+        else:
+            self.host = log_data.host
+            self.index_name = log_data.index_name
+            self.day = log_data.day
+            self.es = log_data.es
+            self.total, self.browser_ids = log_data.total, log_data.browser_ids
+            self.dataframe = None
+            self.integrate_data()
+            self.stages = None
+            """list: stages is a list.
+            Example:
+                [[0, True, {"state_name": "index"}], [0, False, {"state_name": explore}]]
+            """
+
+            self.stages_count = None
+
+    def integrate_data(self):
+        df = []
+        size = 50
+        pages = self.total / size
+        print "Integrating data from search results..."
+        for i in range(0, pages + 1):
+            res = self.result(start=(i * size), size=size)
+            for hit in res:
+                df.append({'@timestamp': hit['fields']['@timestamp'][0],
+                          'browserid': hit['fields']['browserid'][0],
+                          'action': hit['fields']['action'][0],
+                          'state_name': hit['fields']['state_name'][0]})
+
+        self.dataframe = pd.DataFrame(df, columns=['@timestamp', 'browserid', 'action', 'state_name'])
+
+    def set_stages(self, *args):
+        self.stages = [[0, False, stage] for stage in args]
+        self.stages[0][1] = True
+        return self.stages
+
+    def calculate_funnel(self):
+        if self.stages is None:
+            raise ValueError("stages cannot be empty.")
+
+        for browser_id in self.browser_ids:
+            # print "Browser ID: " + browser_id
+            user_data_set = self.dataframe.loc[self.dataframe['browserid'] == browser_id]
+            self.stages[0][1] = True
+            for index, record in user_data_set.iterrows():
+                self._count_stage(record)
+
+        return self.stages_percentage()
+
+    def _count_stage(self, record_stage):
+        stage_idx = 0
+        while stage_idx < len(self.stages):
+            """Search flag using while loop."""
+            if self.stages[stage_idx][1]:
+                stage_key = self.stages[stage_idx][2].keys()[0]
+                stage_val = self.stages[stage_idx][2].values()[0]
+
+                record_stage_val = record_stage[stage_key]
+                # print stage_val + " @ " + record_stage_val + " " + record_stage['@timestamp']
+
+                if stage_val == record_stage_val:
+                    # print "^^^^^^^^^^^^^^^^^^^^^^ MATCH"
+                    self.stages[stage_idx][0] += 1
+                    self.stages[stage_idx][1] = False
+                    if (stage_idx + 1) >= len(self.stages):
+                        self.stages[0][1] = True
+                    else:
+                        self.stages[stage_idx + 1][1] = True
+                    break
+                else:
+                    self.stages[stage_idx][1] = False
+                    self.stages[0][1] = True
+
+                    first_stage_val = self.stages[0][2].values()[0]
+                    # print first_stage_val + " @ " + record_stage_val
+                    if first_stage_val == record_stage_val:
+                        # print "^^^^^^^^^^^^^^^^^^ MATCH"
+                        self.stages[0][0] += 1
+                        self.stages[0][1] = False
+                        self.stages[1][1] = True
+                        break
+            stage_idx += 1
+
+    def stages_percentage(self):
+        for idx, stage in enumerate(self.stages):
+            if idx == 0:
+                stage.append({'trend': 100})
+            else:
+                trend = (stage[0] * 100.0) / (self.stages[idx - 1][0])
+                stage.append({'trend': trend})
+
+        return self.stages
+
+
+if __name__ == '__main__':
+    import sys
+    funnel_data = FunnelData(LogData(host=sys.argv[1],
+                            index_name='beta-backend-socketlog-*',
+                            day=10))
+    print funnel_data.host
+    print funnel_data.total
+    # print funnel_data.browser_ids
+
+    funnel_data.set_stages({'state_name': 'viewTopic'},
+                   {'state_name': 'user'},
+                   {'state_name': 'index'})
+
+    print funnel_data.calculate_funnel()
