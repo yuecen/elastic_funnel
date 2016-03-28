@@ -1,31 +1,43 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
+from ascii_graph import Pyasciigraph
 from elasticsearch_data import LogData
 
 pd.set_option('display.width', 1000)
 
 
+def ascii_funnel(info, funnel_data):
+    """Response ascii graph by funnel data.
+
+    Parameters
+    ----------
+    info: string
+    funnel_data: list of tuple
+
+    Returns list of ascii string.
+    -------
+
+    """
+    print funnel_data
+    graph = Pyasciigraph()
+    return graph.graph(info, funnel_data)
+
+
 class FunnelData(LogData):
 
-    def __init__(self, log_data=None):
-        if not log_data:
-            raise ValueError("log data set cannot be empty.")
-        else:
-            self.host = log_data.host
-            self.index_name = log_data.index_name
-            self.day = log_data.day
-            self.es = log_data.es
-            self.total, self.browser_ids = log_data.total, log_data.browser_ids
-            self.dataframe = None
-            self.integrate_data()
-            self.stages = None
-            """list: stages is a list.
-            Example:
-                [[0, True, {"state_name": "index"}], [0, False, {"state_name": explore}]]
-            """
+    def __init__(self, host=None, index_name=None, start_time=None, end_time=None):
+        LogData.__init__(self, host, index_name, start_time, end_time)
 
-            self.stages_count = None
+        self.dataframe = None
+        self.integrate_data()
+        self.stages = None
+        """list: stages is a list.
+        Example:
+            [[0, True, {"state_name": "index"}], [0, False, {"state_name": explore}]]
+        """
+
+        self.stages_count = None
 
     def integrate_data(self):
         df = []
@@ -115,9 +127,7 @@ class FunnelData(LogData):
 
 if __name__ == '__main__':
     import sys
-    funnel_data = FunnelData(LogData(host=sys.argv[1],
-                            index_name='beta-backend-socketlog-*',
-                            day=10))
+    funnel_data = FunnelData(host=sys.argv[1], index_name='beta-backend-socketlog-*')
     print funnel_data.total
     funnel_data.set_stages({'state_name': 'index'},
                    {'state_name': 'newTopic'},
