@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pandas as pd
 from elasticsearch_data import LogData
 
@@ -41,6 +43,11 @@ class FunnelData(LogData):
         self.dataframe = pd.DataFrame(df, columns=['@timestamp', 'browserid', 'action', 'state_name'])
 
     def set_stages(self, *args):
+        """Set funnel stages before you calculating it
+
+        :param args: some dict
+        :return: a list of list
+        """
         self.stages = [[0, False, stage] for stage in args]
         self.stages[0][1] = True
         return self.stages
@@ -61,7 +68,7 @@ class FunnelData(LogData):
     def _count_stage(self, record_stage):
         stage_idx = 0
         while stage_idx < len(self.stages):
-            """Search flag using while loop."""
+            """Search flag using while loop"""
             if self.stages[stage_idx][1]:
                 stage_key = self.stages[stage_idx][2].keys()[0]
                 stage_val = self.stages[stage_idx][2].values()[0]
@@ -97,8 +104,11 @@ class FunnelData(LogData):
             if idx == 0:
                 stage.append({'trend': 100})
             else:
-                trend = (stage[0] * 100.0) / (self.stages[idx - 1][0])
-                stage.append({'trend': trend})
+                if self.stages[idx - 1][0] == 0:
+                    stage.append({'trend': 0.0})
+                else:
+                    trend = (stage[0] * 100.0) / (self.stages[idx - 1][0])
+                    stage.append({'trend': trend})
 
         return self.stages
 
@@ -108,12 +118,8 @@ if __name__ == '__main__':
     funnel_data = FunnelData(LogData(host=sys.argv[1],
                             index_name='beta-backend-socketlog-*',
                             day=10))
-    print funnel_data.host
     print funnel_data.total
-    # print funnel_data.browser_ids
-
-    funnel_data.set_stages({'state_name': 'viewTopic'},
-                   {'state_name': 'user'},
-                   {'state_name': 'index'})
-
+    funnel_data.set_stages({'state_name': 'index'},
+                   {'state_name': 'newTopic'},
+                   {'state_name': 'PlaygroundTopic'})
     print funnel_data.calculate_funnel()
