@@ -7,7 +7,7 @@ it can't fit our goal to analyze series log with context.
 
 ### Constraint
 
-* You have to add at least a field with ```state_name``` into your index
+ ** You have to add at least a field with ```state_name``` into your index **
 
 ### Quick Start CLI
 
