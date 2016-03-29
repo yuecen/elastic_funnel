@@ -12,6 +12,7 @@ setup(
     # Author details
     author='yuecen',
     author_email='yuecendev@gmail.com',
+    url='https://github.com/yuecen/elastic_funnel',
     long_description=description,
     license='MIT',
     classifiers=[
