@@ -10,7 +10,7 @@ from funnel import FunnelData, ascii_funnel
 app = Flask(__name__)
 
 config = ConfigParser.ConfigParser()
-config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'funnel.ini'))
+config.read(os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'funnel.ini'))
 
 es_host = os.environ['ELASTIC_HOST'] if os.environ.get('ELASTIC_HOST') else config.get('elastic', 'host')
 es_port = os.environ['ELASTIC_PORT'] if os.environ.get('ELASTIC_PORT') else config.get('elastic', 'port')
