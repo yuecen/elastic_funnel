@@ -50,7 +50,7 @@ def search_syntax(start=0, size=0, start_time='2016-03-24T00:00:00', end_time=No
 
 class LogData(object):
 
-    def __init__(self, host=None, index_name=None, start_time=None, end_time=None):
+    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None):
         """LogData is a class to collect log from Elasticsearch.
 
         Parameters
@@ -70,6 +70,11 @@ class LogData(object):
         else:
             raise ValueError("Elasticsearch host cannot be empty.")
 
+        if port:
+            self.port = port
+        else:
+            self.port = 9200
+
         if index_name:
             self.index_name = index_name
         else:
@@ -85,7 +90,7 @@ class LogData(object):
         else:
             self.end_time = 'now'
 
-        self.es = Elasticsearch(['http://' + self.host + ':9200'])
+        self.es = Elasticsearch([{'host': self.host, 'port': self.port}])
         self.total, self.browser_ids = self._total_log_browser_ids()
 
     def _total_log_browser_ids(self):

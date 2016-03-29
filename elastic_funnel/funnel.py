@@ -26,8 +26,8 @@ def ascii_funnel(info, funnel_data):
 
 class FunnelData(LogData):
 
-    def __init__(self, host=None, index_name=None, start_time=None, end_time=None):
-        LogData.__init__(self, host, index_name, start_time, end_time)
+    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None):
+        LogData.__init__(self, host, port, index_name, start_time, end_time)
 
         self.dataframe = None
         self.integrate_data()
@@ -116,7 +116,7 @@ class FunnelData(LogData):
             if idx == 0:
                 stage.append({'trend': 100})
             else:
-                if self.stages[idx - 1][0] == 0:
+                if self.stages[idx - 1][0 ] == 0:
                     stage.append({'trend': 0.0})
                 else:
                     trend = (stage[0] * 100.0) / (self.stages[idx - 1][0])

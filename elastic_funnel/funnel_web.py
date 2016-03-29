@@ -22,7 +22,7 @@ def handler():
     data = request.data
     data_dict = json.loads(data)
     print data_dict
-    funnel_data = FunnelData(host=es_host, index_name=es_index,
+    funnel_data = FunnelData(host=es_host, port=es_port, index_name=es_index,
                              start_time=data_dict['start_time'],
                              end_time=data_dict['end_time'])
     print funnel_data.total
