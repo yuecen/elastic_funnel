@@ -6,11 +6,16 @@ import os
 import ConfigParser
 
 config = ConfigParser.ConfigParser()
-config.read(os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'funnel.ini'))
+config.read(os.path.expanduser('~/.elastic_funnel'))
 
-es_host = os.environ['ELASTIC_HOST'] if os.environ.get('ELASTIC_HOST') else config.get('elastic', 'host')
-es_port = os.environ['ELASTIC_PORT'] if os.environ.get('ELASTIC_PORT') else config.get('elastic', 'port')
-es_index = os.environ['ELASTIC_INDEX'] if os.environ.get('ELASTIC_INDEX') else config.get('elastic', 'index')
+es_host = None
+es_port = None
+es_index = None
+
+if config.has_section('elastic'):
+    es_host = os.environ['ELASTIC_HOST'] if os.environ.get('ELASTIC_HOST') else config.get('elastic', 'host')
+    es_port = os.environ['ELASTIC_PORT'] if os.environ.get('ELASTIC_PORT') else config.get('elastic', 'port')
+    es_index = os.environ['ELASTIC_INDEX'] if os.environ.get('ELASTIC_INDEX') else config.get('elastic', 'index')
 
 
 def search_syntax(start=0, size=0, start_time='2016-03-24T00:00:00', end_time=None, query=None):

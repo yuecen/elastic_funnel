@@ -7,17 +7,30 @@ it can't fit our goal to analyze series log with context.
 
 ### Constraint
 
- ** You have to add at least a field with ```state_name``` into your index **
+  ** You have to add at least a field with name ```state_name``` into your index **
 
-### Quick Start CLI
+### Quick Start with CLI
 
-Install
+#### Install
+
+  ** Pandas is one of core requirements and it can take a few minutes to complete. **
 
 ```
 pip install elastic_funnel
 ```
 
-Arguments
+#### Add local config file
+
+Add argument file to your home path ```~/.elastic_funnel``` with
+
+```
+[elastic]
+host = 127.0.0.1
+port = 9200
+index = beta-backend-socketlog-*
+```
+
+#### Arguments
 
 ```
 usage: elastic_funnel [-h] [--host HOST] [--port PORT] [--index INDEX]
@@ -40,13 +53,13 @@ optional arguments:
                         country:US
 ```
 
-Run for a funnel
+#### Run for a funnel
 
 ```
 elastic_funnel --host=<elasticsearch_ip> --port=<elasticsearch_port> --stages index newTopic playgroundTopic --start 2016-03-25T00:00:00
 ```
 
-Funnel visualization
+#### Funnel visualization
 
 ```
 Funnel: index newTopic playgroundTopic
