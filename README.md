@@ -1,7 +1,7 @@
 ## Elastic Funnel
 
-This is an analysis tool for funnel visualization with log from Elasticsearch. Even though we have [Kibana] to display log very well, 
-it can't fit our goal to analyze series log with context. 
+This is an analysis tool for funnel visualization with log from Elasticsearch. Even though we have [Kibana] can display log very well, 
+but it can't fit our goal that to analyze series log with context. 
 
 [Kibana]:https://www.elastic.co/products/kibana
 
@@ -13,21 +13,21 @@ it can't fit our goal to analyze series log with context.
 
 #### Install
 
-  ** Pandas is one of core requirements and it can take a few minutes to complete. **
+  ** Pandas is one of core requirements and it could take a few minutes to complete. **
 
 ```
 pip install elastic_funnel
 ```
 
-#### Add local config file
+#### Add Local Config File
 
-Add argument file to your home path ```~/.elastic_funnel``` with
+Add the argument file ```.elastic_funnel``` to your home path, with
 
 ```
 [elastic]
 host = 127.0.0.1
 port = 9200
-index = beta-backend-socketlog-*
+index = <your_index_name>
 ```
 
 #### Arguments
@@ -53,7 +53,7 @@ optional arguments:
                         country:US
 ```
 
-#### Run for a funnel
+#### Run for a Funnel
 
 ```
 elastic_funnel --host=<elasticsearch_ip> --port=<elasticsearch_port> --stages index newTopic playgroundTopic --start 2016-03-25T00:00:00
