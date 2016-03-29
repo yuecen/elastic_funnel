@@ -8,7 +8,7 @@ pd.set_option('display.width', 1000)
 
 
 def ascii_funnel(info, funnel_data):
-    """Response ascii graph by funnel data.
+    """Return ascii graph by funnel data.
 
     Parameters
     ----------
@@ -19,15 +19,14 @@ def ascii_funnel(info, funnel_data):
     -------
 
     """
-    print funnel_data
     graph = Pyasciigraph()
     return graph.graph(info, funnel_data)
 
 
 class FunnelData(LogData):
 
-    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None):
-        LogData.__init__(self, host, port, index_name, start_time, end_time)
+    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None, query=None):
+        LogData.__init__(self, host, port, index_name, start_time, end_time, query)
 
         self.dataframe = None
         self.integrate_data()
@@ -43,7 +42,7 @@ class FunnelData(LogData):
         df = []
         size = 50
         pages = self.total / size
-        print "Integrating data from search results..."
+        print "Integrating data from Elasticsearch..."
         for i in range(0, pages + 1):
             res = self.result(start=(i * size), size=size)
             for hit in res:
@@ -54,13 +53,13 @@ class FunnelData(LogData):
 
         self.dataframe = pd.DataFrame(df, columns=['@timestamp', 'browserid', 'action', 'state_name'])
 
-    def set_stages(self, *args):
+    def set_stages(self, stages):
         """Set funnel stages before you calculating it
 
-        :param args: some dict
+        :param stages: a list of dict
         :return: a list of list
         """
-        self.stages = [[0, False, stage] for stage in args]
+        self.stages = [[0, False, stage] for stage in stages]
         self.stages[0][1] = True
         return self.stages
 
@@ -129,7 +128,7 @@ if __name__ == '__main__':
     import sys
     funnel_data = FunnelData(host=sys.argv[1], index_name='beta-backend-socketlog-*')
     print funnel_data.total
-    funnel_data.set_stages({'state_name': 'index'},
+    funnel_data.set_stages([{'state_name': 'index'},
                    {'state_name': 'newTopic'},
-                   {'state_name': 'PlaygroundTopic'})
+                   {'state_name': 'PlaygroundTopic'}])
     print funnel_data.calculate_funnel()

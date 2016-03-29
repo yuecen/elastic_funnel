@@ -1,34 +1,23 @@
 # -*- coding: utf-8 -*-
 import json
 
-import os
-import ConfigParser
-
+from elasticsearch_data import es_index, es_port, es_host
 from flask import Flask, Response, request
 from funnel import FunnelData, ascii_funnel
 
 app = Flask(__name__)
-
-config = ConfigParser.ConfigParser()
-config.read(os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'funnel.ini'))
-
-es_host = os.environ['ELASTIC_HOST'] if os.environ.get('ELASTIC_HOST') else config.get('elastic', 'host')
-es_port = os.environ['ELASTIC_PORT'] if os.environ.get('ELASTIC_PORT') else config.get('elastic', 'port')
-es_index = os.environ['ELASTIC_INDEX'] if os.environ.get('ELASTIC_INDEX') else config.get('elastic', 'index')
 
 
 @app.route('/funnel', methods=['POST'])
 def handler():
     data = request.data
     data_dict = json.loads(data)
-    print data_dict
     funnel_data = FunnelData(host=es_host, port=es_port, index_name=es_index,
                              start_time=data_dict['start_time'],
                              end_time=data_dict['end_time'])
-    print funnel_data.total
-    funnel_data.set_stages({'state_name': 'index'},
+    funnel_data.set_stages([{'state_name': 'index'},
                            {'state_name': 'newTopic'},
-                           {'state_name': 'playgroundTopic'})
+                           {'state_name': 'playgroundTopic'}])
 
     fd = funnel_data.calculate_funnel()
     fd = [('\t' + '{0:.1f}'.format(d[3].values()[0]) + '% \t' + d[2].values()[0], d[0]) for d in fd]

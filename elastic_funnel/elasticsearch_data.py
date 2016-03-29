@@ -2,8 +2,19 @@
 
 from elasticsearch import Elasticsearch
 
+import os
+import ConfigParser
 
-def search_syntax(start=0, size=0, start_time='2016-03-24T00:00:00', end_time=None):
+config = ConfigParser.ConfigParser()
+config.read(os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'funnel.ini'))
+
+es_host = os.environ['ELASTIC_HOST'] if os.environ.get('ELASTIC_HOST') else config.get('elastic', 'host')
+es_port = os.environ['ELASTIC_PORT'] if os.environ.get('ELASTIC_PORT') else config.get('elastic', 'port')
+es_index = os.environ['ELASTIC_INDEX'] if os.environ.get('ELASTIC_INDEX') else config.get('elastic', 'index')
+
+
+def search_syntax(start=0, size=0, start_time='2016-03-24T00:00:00', end_time=None, query=None):
+    query = 'AND ' + query if query else ''
     return {
         "from": start,
         "size": size,
@@ -15,7 +26,7 @@ def search_syntax(start=0, size=0, start_time='2016-03-24T00:00:00', end_time=No
                 "must": [
                     {
                         "query_string": {
-                            "query": "action:log_state_change AND -token_username:* AND browserid:*"
+                            "query": "action:log_state_change AND -token_username:* AND browserid:* " + query
                         }
                     },
                     {
@@ -50,7 +61,7 @@ def search_syntax(start=0, size=0, start_time='2016-03-24T00:00:00', end_time=No
 
 class LogData(object):
 
-    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None):
+    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None, query=None):
         """LogData is a class to collect log from Elasticsearch.
 
         Parameters
@@ -89,6 +100,7 @@ class LogData(object):
             self.end_time = end_time
         else:
             self.end_time = 'now'
+        self.query = query
 
         self.es = Elasticsearch([{'host': self.host, 'port': self.port}])
         self.total, self.browser_ids = self._total_log_browser_ids()
@@ -96,11 +108,11 @@ class LogData(object):
     def _total_log_browser_ids(self):
         search_result = self.es.search(index=self.index_name, body=search_syntax(start=0, size=0,
                                                                                  start_time=self.start_time,
-                                                                                 end_time=self.end_time))
+                                                                                 end_time=self.end_time, query=self.query))
         return search_result['hits']['total'], [bucket['key'] for bucket in search_result['aggregations']['browserid_tag']['buckets']]
 
     def result(self, start=0, size=0):
         search_result = self.es.search(index=self.index_name, body=search_syntax(start=start, size=size,
                                                                                  start_time=self.start_time,
-                                                                                 end_time=self.end_time))
+                                                                                 end_time=self.end_time, query=self.query))
         return search_result['hits']['hits']
