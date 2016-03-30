@@ -21,17 +21,17 @@ pip install elastic_funnel
 
 #### Add Essential Config File
 
-Add the argument file ```~/.elastic_funnel``` to your home path, with
+Add the argument file ```~/.elastic_funnel``` to your home path, with 
 
 ```
 [elastic]
 host = 127.0.0.1
 port = 9200
 index = user-behavior-*
-query = action:log_state_change AND -token_username:* AND sessionid:* 
-fields = @timestamp, sessionid, state_name, action
+query = action:state_change AND sessionid:* 
+fields = @timestamp, sessionid, state, action
 timefield = @timestamp
-stagefield = state_name
+stagefield = state
 identity = sessionid
 ```
 
@@ -62,7 +62,7 @@ optional arguments:
 #### Run for a Funnel
 
 ```
-elastic_funnel --stages index newTopic playgroundTopic --start 2016-03-25T00:00:00
+elastic_funnel --stages landingpage login searchpage --start 2016-03-25T00:00:00
 ```
 
 #### Funnel Visualization with ASCII Characters
@@ -70,11 +70,11 @@ elastic_funnel --stages index newTopic playgroundTopic --start 2016-03-25T00:00:
 You could get a response looks like follows, the percentage means trend from one stage to the next.
 
 ```
-Funnel: index --> newTopic --> playgroundTopic 
+Funnel: landingpage --> login --> searchpage 
 ############################################################################### 
-██████████████████████████████████████████████████  27          100.0%  index          
-██████████████                                       8          29.6%   newTopic        
-█                                                    1          12.5%   playgroundTopic
+██████████████████████████████████████████████████  27          100.0%  landingpage          
+██████████████                                       8          29.6%   login        
+█                                                    1          12.5%   searchpage
 ```
 
 ### Quick Start with Docker
@@ -84,7 +84,7 @@ docker pull yuecen/elastic_funnel
 ```
 
 ```
-docker run -it --rm -v ~/.elastic_funnel:/root/.elastic_funnel:ro yuecen/elastic_funnel elastic_funnel --stages index newTopic playgroundTopic
+docker run -it --rm -v ~/.elastic_funnel:/root/.elastic_funnel:ro yuecen/elastic_funnel elastic_funnel --stages landingpage login searchpage
 ```
 
 ### Quick Start with Gunicorn and cRUL ( *DEVELOPING...* )

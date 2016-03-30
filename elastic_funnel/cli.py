@@ -13,7 +13,7 @@ class CliArgs:
         p.add_argument('--port', type=int, help='Port of Elasticsearch')
         p.add_argument('--index', help='Index name of Elasticsearch, e.g., user-behavior-log-*')
         p.add_argument('--stages', required=True, nargs='+', help='Set a path of stages , '
-                                                                  'e.g., index explore user explore')
+                                                                  'e.g., landingpage login searchpage')
         p.add_argument('--start', help='Start time of log, e.g., 2016-03-24T00:00:00')
         p.add_argument('--end', help='End time of log, e.g., 2016-03-28T00:00:00')
         p.add_argument('--add_query', help='Additional query using syntax of Lucene, '
