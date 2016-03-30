@@ -7,7 +7,7 @@ requirements = [i.strip() for i in open("requirements.txt").readlines()]
 setup(
     name='elastic_funnel',
     description='Analysis tool for funnel visualization with log from Elasticsearch',
-    version='0.0.5',
+    version='0.0.6',
 
     # Author details
     author='yuecen',
