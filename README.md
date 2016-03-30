@@ -1,7 +1,7 @@
 ## Elastic Funnel
 
 This is an analysis tool for funnel visualization with log from Elasticsearch. Even though we have [Kibana] can display log very well, 
-but it can't fit our goal that to analyze series log with context. 
+it can't fit our goal that to analyze series log with context. 
 
 ### Constraint
 
@@ -63,7 +63,7 @@ optional arguments:
 elastic_funnel --host=<elasticsearch_ip> --port=<elasticsearch_port> --stages index newTopic playgroundTopic --start 2016-03-25T00:00:00
 ```
 
-#### Funnel Visualization with Ascii Characters
+#### Funnel Visualization with ASCII Characters
 
 You could get a response looks like follows, the percentage means trend from one stage to the next.
 
