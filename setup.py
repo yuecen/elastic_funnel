@@ -19,7 +19,7 @@ setup(
         'Intended Audience :: Developers',
         'Programming Language :: Python',
     ],
-    keywords='elasticsearch log funnel',
+    keywords='elasticsearch, log, funnel, elastic_funnel',
     install_requires=requirements,
     packages=find_packages(),
     entry_points={

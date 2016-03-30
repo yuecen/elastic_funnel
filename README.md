@@ -3,7 +3,9 @@
 This is an analysis tool for funnel visualization with log from Elasticsearch. Even though we have [Kibana] can display log very well, 
 it can't fit our goal that to analyze series log with context. 
 
-### Constraint
+### Prerequisites
+
+In order to run elastic_funnel, some works have to prepare.
 
   ** You have to add at least a field with name ```state_name``` into your index **
 
@@ -60,7 +62,7 @@ optional arguments:
 #### Run for a Funnel
 
 ```
-elastic_funnel --host=<elasticsearch_ip> --port=<elasticsearch_port> --stages index newTopic playgroundTopic --start 2016-03-25T00:00:00
+elastic_funnel --stages index newTopic playgroundTopic --start 2016-03-25T00:00:00
 ```
 
 #### Funnel Visualization with ASCII Characters
