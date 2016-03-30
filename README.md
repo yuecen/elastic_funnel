@@ -3,8 +3,6 @@
 This is an analysis tool for funnel visualization with log from Elasticsearch. Even though we have [Kibana] can display log very well, 
 but it can't fit our goal that to analyze series log with context. 
 
-[Kibana]:https://www.elastic.co/products/kibana
-
 ### Constraint
 
   ** You have to add at least a field with name ```state_name``` into your index **
@@ -13,21 +11,26 @@ but it can't fit our goal that to analyze series log with context.
 
 #### Install
 
-  ** Pandas is one of core requirements and it could take a few minutes to complete. **
+  ** [Pandas] is one of core requirements and it could take a few minutes to complete. **
 
 ```
 pip install elastic_funnel
 ```
 
-#### Add Local Config File
+#### Add Essential Config File
 
-Add the argument file ```.elastic_funnel``` to your home path, with
+Add the argument file ```~/.elastic_funnel``` to your home path, with
 
 ```
 [elastic]
 host = 127.0.0.1
 port = 9200
-index = <your_index_name>
+index = user-behavior-*
+query = action:log_state_change AND -token_username:* AND sessionid:* 
+fields = @timestamp, sessionid, state_name, action
+timefield = @timestamp
+stagefield = state_name
+identity = sessionid
 ```
 
 #### Arguments
@@ -35,7 +38,7 @@ index = <your_index_name>
 ```
 usage: elastic_funnel [-h] [--host HOST] [--port PORT] [--index INDEX]
                       --stages STAGES [STAGES ...] [--start START] [--end END]
-                      [--query QUERY]
+                      [--add_query ADD_QUERY]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -47,7 +50,8 @@ optional arguments:
                         explore
   --start START         Start time of log, e.g., 2016-03-24T00:00:00
   --end END             End time of log, e.g., 2016-03-28T00:00:00
-  --query QUERY         Additional query using syntax of Lucene, https://lucen
+  --add_query ADD_QUERY
+                        Additional query using syntax of Lucene, https://lucen
                         e.apache.org/core/2_9_4/queryparsersyntax.html. You
                         can narrow you search target by syntax, e.g.,
                         country:US
@@ -59,17 +63,19 @@ optional arguments:
 elastic_funnel --host=<elasticsearch_ip> --port=<elasticsearch_port> --stages index newTopic playgroundTopic --start 2016-03-25T00:00:00
 ```
 
-#### Funnel visualization
+#### Funnel Visualization with Ascii Characters
+
+You could get a response looks like follows, the percentage means trend from one stage to the next.
 
 ```
-Funnel: index newTopic playgroundTopic
+Funnel: index --> newTopic --> playgroundTopic 
 ############################################################################### 
 ██████████████████████████████████████████████████  27          100.0%  index          
 ██████████████                                       8          29.6%   newTopic        
 █                                                    1          12.5%   playgroundTopic
 ```
 
-### Quick Start with Gunicorn and cRUL (Developing)
+### Quick Start with Gunicorn and cRUL ( *DEVELOPING...* )
 
 To run this script, a Gunicorn server will be run on your host:
 
@@ -77,18 +83,5 @@ To run this script, a Gunicorn server will be run on your host:
 $ ./funnel_web.sh
 ```
 
-```
-curl -XPOST  -H "Content-Type: application/json" http://localhost:5578/funnel -d '
-{
-    "start_time": "2016-03-24T00:00:00", 
-    "end_time": "2016-03-26T00:00:00"
-}'
-```
-
-```
-Funnel 
-############################################################################### 
-███████████████████████████████████████████████████  30         100.0%  index         
-██████                                                4         13.3%   newTopic       
-                                                      0         0.0%    playgroundTopic
-```
+[Kibana]:https://www.elastic.co/products/kibana
+[Pandas]:http://pandas.pydata.org/

@@ -2,7 +2,7 @@
 
 import pandas as pd
 from ascii_graph import Pyasciigraph
-from elasticsearch_data import LogData
+from elasticsearch_data import LogData, es_identity, es_fields
 
 pd.set_option('display.width', 1000)
 
@@ -25,8 +25,8 @@ def ascii_funnel(info, funnel_data):
 
 class FunnelData(LogData):
 
-    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None, query=None):
-        LogData.__init__(self, host, port, index_name, start_time, end_time, query)
+    def __init__(self, host=None, port=None, index_name=None, start_time=None, end_time=None, add_query=None):
+        LogData.__init__(self, host, port, index_name, start_time, end_time, add_query)
 
         self.dataframe = None
         self.integrate_data()
@@ -46,12 +46,9 @@ class FunnelData(LogData):
         for i in range(0, pages + 1):
             res = self.result(start=(i * size), size=size)
             for hit in res:
-                df.append({'@timestamp': hit['fields']['@timestamp'][0],
-                          'browserid': hit['fields']['browserid'][0],
-                          'action': hit['fields']['action'][0],
-                          'state_name': hit['fields']['state_name'][0]})
+                df.append({field: hit['fields'][field][0] for field in es_fields})
 
-        self.dataframe = pd.DataFrame(df, columns=['@timestamp', 'browserid', 'action', 'state_name'])
+        self.dataframe = pd.DataFrame(df, columns=es_fields)
 
     def set_stages(self, stages):
         """Set funnel stages before you calculating it
@@ -69,7 +66,7 @@ class FunnelData(LogData):
 
         for browser_id in self.browser_ids:
             # print "Browser ID: " + browser_id
-            user_data_set = self.dataframe.loc[self.dataframe['browserid'] == browser_id]
+            user_data_set = self.dataframe.loc[self.dataframe[es_identity] == browser_id]
             self.stages[0][1] = True
             for index, record in user_data_set.iterrows():
                 self._count_stage(record)
@@ -128,7 +125,5 @@ if __name__ == '__main__':
     import sys
     funnel_data = FunnelData(host=sys.argv[1], index_name='beta-backend-socketlog-*')
     print funnel_data.total
-    funnel_data.set_stages([{'state_name': 'index'},
-                   {'state_name': 'newTopic'},
-                   {'state_name': 'PlaygroundTopic'}])
+    funnel_data.set_stages([{'state_name': 'index'}, {'state_name': 'newTopic'}, {'state_name': 'PlaygroundTopic'}])
     print funnel_data.calculate_funnel()
