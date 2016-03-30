@@ -77,6 +77,16 @@ Funnel: index --> newTopic --> playgroundTopic
 █                                                    1          12.5%   playgroundTopic
 ```
 
+### Quick Start with Docker
+
+```
+docker pull yuecen/elastic_funnel
+```
+
+```
+docker run -it --rm -v ~/.elastic_funnel:/root/.elastic_funnel:ro yuecen/elastic_funnel elastic_funnel --stages index newTopic playgroundTopic
+```
+
 ### Quick Start with Gunicorn and cRUL ( *DEVELOPING...* )
 
 To run this script, a Gunicorn server will be run on your host:
