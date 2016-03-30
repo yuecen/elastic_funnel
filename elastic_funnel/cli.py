@@ -41,7 +41,7 @@ def main():
 
     fd = [('\t' + '{0:.1f}'.format(d[3].values()[0]) + '% \t' + d[2].values()[0], d[0]) for d in fd]
     print
-    print ' \n'.join(ascii_funnel('Funnel: ' + ' --> '.join(cli_args.stages), fd))
+    print ' \n'.join(ascii_funnel('Funnel: ' + ' --> '.join(cli_args.stages).encode('utf-8'), fd))
 
 
 if __name__ == '__main__':

@@ -8,4 +8,4 @@ RUN build_deps="python-dev build-essential" && \
     apt-get purge -y --auto-remove ${build_deps} && \
     apt-get autoremove -y
 
-ENTRYPOINT ["/bin/bash"]
+CMD ["elastic_funnel"]
