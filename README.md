@@ -7,7 +7,8 @@ it can't fit our goal that to analyze series log with context.
 
 In order to run elastic_funnel, some works have to prepare.
 
-  ** You have to add at least a field with name ```state_name``` into your index **
+  * You have to run your Elasticsearch first
+  * Set the essential config file with your Elasticsearch environment 
 
 ### Quick Start with CLI
 
