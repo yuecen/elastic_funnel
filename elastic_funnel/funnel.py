@@ -47,8 +47,7 @@ class FunnelData(LogData):
             res = self.result(start=(i * size), size=size)
             for hit in res:
                 df.append({field: hit['fields'][field][0] for field in es_fields})
-
-        self.dataframe = pd.DataFrame(df, columns=es_fields)
+        self.dataframe = pd.DataFrame(df, columns=es_fields).sort(['@timestamp'], ascending=True)
 
     def set_stages(self, stages):
         """Set funnel stages before you calculating it

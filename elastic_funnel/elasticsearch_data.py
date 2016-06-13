@@ -64,7 +64,8 @@ def search_syntax(start=0, size=0, start_time='1987-03-24T00:00:00', end_time=No
         "aggs": {
             "identity_tag": {
                 "terms": {
-                    "field": es_identity
+                    "field": es_identity,
+                    "size": 0
                 }
             }
         }
