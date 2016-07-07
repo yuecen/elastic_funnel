@@ -1,5 +1,7 @@
 ## Elastic Funnel
 
+[![Build Status](https://travis-ci.org/yuecen/elastic_funnel.svg?branch=master)](https://travis-ci.org/yuecen/elastic_funnel)
+
 This is an analysis tool for funnel visualization with log from Elasticsearch. Even though we have [Kibana] can display log very well, 
 it can't fit our goal that to analyze series log with context. 
 
