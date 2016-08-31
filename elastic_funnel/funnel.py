@@ -8,7 +8,7 @@ import pandas as pd
 
 pd.set_option('display.width', 1000)
 
-IDLE_TIME = 36
+IDLE_TIME = 3600
 
 
 def ascii_funnel(info, funnel_data):
