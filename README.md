@@ -30,7 +30,6 @@ host = 127.0.0.1
 port = 9200
 index = user-behavior-*
 query = action:state_change AND sessionid:* 
-fields = @timestamp, sessionid, state, action
 timefield = @timestamp
 stagefield = state
 identity = sessionid

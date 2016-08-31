@@ -18,10 +18,9 @@ if config.has_section('elastic'):
     es_index = os.environ['ELASTIC_INDEX'] if os.environ.get('ELASTIC_INDEX') else config.get('elastic', 'index')
     es_query = os.environ['ELASTIC_QUERY'] if os.environ.get('ELASTIC_QUERY') else config.get('elastic', 'query')
     es_identity = os.environ['ELASTIC_IDENTITY'] if os.environ.get('ELASTIC_IDENTITY') else config.get('elastic', 'identity')
-    es_fields = os.environ['ELASTIC_FIELDS'] if os.environ.get('ELASTIC_FIELDS') else config.get('elastic', 'fields')
-    es_fields = [field.strip() for field in es_fields.split(',')]
     es_timefield = os.environ['ELASTIC_TIMEFIELD'] if os.environ.get('ELASTIC_TIMEFIELD') else config.get('elastic', 'timefield')
     es_stagefield = os.environ['ELASTIC_STAGEFIELD'] if os.environ.get('ELASTIC_STAGEFIELD') else config.get('elastic', 'stagefield')
+    es_fields = [es_timefield, es_identity, es_stagefield]
 else:
     print "Can't find the elastic section."
     exit()
