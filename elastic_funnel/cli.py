@@ -15,7 +15,7 @@ class CliArgs:
         p.add_argument('--stages', required=True, nargs='+', help='Set a path of stages , '
                                                                   'e.g., landingpage login searchpage')
         p.add_argument('--start', help='Start time of log, e.g., 2016-03-24T00:00:00')
-        p.add_argument('--end', help='End time of log, e.g., 2016-03-28T00:00:00')
+        p.add_argument('--end', help='End time of log, e.g., 2016-03-28T23:59:59')
         p.add_argument('--add_query', help='Additional query using syntax of Lucene, '
                                        'https://lucene.apache.org/core/2_9_4/queryparsersyntax.html. '
                                        'You can narrow you search target by syntax, e.g., country:US')
@@ -37,11 +37,11 @@ def main():
                              start_time=cli_args.start, end_time=cli_args.end, add_query=cli_args.add_query)
     funnel_data.set_stages([{es_stagefield: stage} for stage in cli_args.stages])
 
-    fd = funnel_data.calculate_funnel()
+    funnel_stages = funnel_data.count_funnel()
 
-    fd = [('\t' + '{0:.1f}'.format(d[3].values()[0]) + '% \t' + d[2].values()[0], d[0]) for d in fd]
+    funnel_stages = [('\t' + '{0:.1f}'.format(stage.trend) + '% \t' + stage.name.values()[0], stage.total) for stage in funnel_stages]
 
-    print ' \n'.join([g.encode('utf-8') for g in ascii_funnel('Funnel: ' + ' --> '.join(cli_args.stages), fd)])
+    print ' \n'.join([g.encode('utf-8') for g in ascii_funnel('Funnel: ' + ' --> '.join(cli_args.stages), funnel_stages)])
 
 
 if __name__ == '__main__':

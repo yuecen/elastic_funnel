@@ -15,20 +15,19 @@ def handler():
     funnel_data = FunnelData(host=es_host, port=es_port, index_name=es_index,
                              start_time=data_dict['start_time'],
                              end_time=data_dict['end_time'])
-    funnel_data.set_stages([{'state_name': 'index'},
-                           {'state_name': 'newTopic'},
-                           {'state_name': 'playgroundTopic'}])
+    funnel_data.set_stages([{'state_name': 'landingpage'},
+                           {'state_name': 'login'},
+                           {'state_name': 'searchpage'}])
 
-    fd = funnel_data.calculate_funnel()
+    fd = funnel_data.count_funnel()
     fd = [('\t' + '{0:.1f}'.format(d[3].values()[0]) + '% \t' + d[2].values()[0], d[0]) for d in fd]
     return Response(' \n'.join(ascii_funnel('Funnel', fd)), mimetype='text/plain')
 
 
 @app.route('/funnel_list', methods=['POST'])
 def funnel_list():
-    funnels = ['1. index -> newTopic -> playgroundTopic',
-               '2. viewTopic -> user -> explore -> index -> newTopic -> playgroundTopic',
-               '3. viewTopic -> user -> newTopic -> playgroundTopic',
+    funnels = ['1. landingpage -> login -> searchpage',
+               '2. landingpage -> login -> searchpage -> searchpage -> user',
                '-----------------------------------------------------------------------',
                'An example for send request with time format: 1, 2016-03-06, 2016-03-28']
     return Response(' \n'.join(funnels), mimetype='text/plain')
