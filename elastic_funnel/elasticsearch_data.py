@@ -17,14 +17,18 @@ if config.has_section('elastic'):
     es_port = os.environ['ELASTIC_PORT'] if os.environ.get('ELASTIC_PORT') else config.get('elastic', 'port')
     es_index = os.environ['ELASTIC_INDEX'] if os.environ.get('ELASTIC_INDEX') else config.get('elastic', 'index')
     es_query = os.environ['ELASTIC_QUERY'] if os.environ.get('ELASTIC_QUERY') else config.get('elastic', 'query')
-    es_identity = os.environ['ELASTIC_IDENTITY'] if os.environ.get('ELASTIC_IDENTITY') else config.get('elastic', 'identity')
-    es_timefield = os.environ['ELASTIC_TIMEFIELD'] if os.environ.get('ELASTIC_TIMEFIELD') else config.get('elastic', 'timefield')
-    es_stagefield = os.environ['ELASTIC_STAGEFIELD'] if os.environ.get('ELASTIC_STAGEFIELD') else config.get('elastic', 'stagefield')
-    es_fields = [es_timefield, es_identity, es_stagefield]
 else:
     print "Can't find the elastic section."
     exit()
 
+if config.has_section('fields'):
+    es_identity = os.environ['FIELDS_IDENTITY'] if os.environ.get('FIELDS_IDENTITY') else config.get('fields', 'identity')
+    es_timefield = os.environ['FIELDS_TIMESTAMP'] if os.environ.get('FIELDS_TIMESTAMP') else config.get('fields', 'timestamp')
+    es_stagefield = os.environ['FIELDS_STAGE'] if os.environ.get('FIELDS_STAGE') else config.get('fields', 'stage')
+    es_fields = [es_timefield, es_identity, es_stagefield]
+else:
+    print "Can't find the fields section."
+    exit()
 
 def search_syntax(start=0, size=0, start_time='1987-03-24T00:00:00', end_time=None, add_query=None):
     add_query = ' AND ' + add_query if add_query else ''
