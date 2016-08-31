@@ -12,9 +12,7 @@ In order to run elastic_funnel, some works have to prepare.
   * You have to run your Elasticsearch first
   * Set the essential config file with your Elasticsearch environment 
 
-### Quick Start with CLI
-
-#### Install
+### Install
 
   ** [Pandas] is one of core requirements and it could take a few minutes to complete. **
 
@@ -36,6 +34,24 @@ fields = @timestamp, sessionid, state, action
 timefield = @timestamp
 stagefield = state
 identity = sessionid
+```
+
+#### Run for a Funnel
+
+```
+elastic_funnel --stages landingpage login searchpage --start 2016-03-25T00:00:00
+```
+
+#### Funnel Visualization with ASCII Characters
+
+You could get a response looks like follows, the percentage means trend from one stage to the next one.
+
+```
+Funnel: landingpage --> login --> searchpage
+###############################################################################
+██████████████████████████████████████████████████  27          100.0%  landingpage
+██████████████                                       8          29.6%   login
+█                                                    1          12.5%   searchpage
 ```
 
 #### Arguments
@@ -62,24 +78,6 @@ optional arguments:
                         country:US
 ```
 
-#### Run for a Funnel
-
-```
-elastic_funnel --stages landingpage login searchpage --start 2016-03-25T00:00:00
-```
-
-#### Funnel Visualization with ASCII Characters
-
-You could get a response looks like follows, the percentage means trend from one stage to the next.
-
-```
-Funnel: landingpage --> login --> searchpage 
-############################################################################### 
-██████████████████████████████████████████████████  27          100.0%  landingpage          
-██████████████                                       8          29.6%   login        
-█                                                    1          12.5%   searchpage
-```
-
 ### Quick Start with Docker
 
 ```
@@ -91,12 +89,6 @@ docker run -it --rm -v ~/.elastic_funnel:/root/.elastic_funnel:ro yuecen/elastic
 ```
 
 ### Quick Start with Gunicorn and cRUL ( *DEVELOPING...* )
-
-To run this script, a Gunicorn server will be run on your host:
-
-```
-$ ./funnel_web.sh
-```
 
 [Kibana]:https://www.elastic.co/products/kibana
 [Pandas]:http://pandas.pydata.org/
