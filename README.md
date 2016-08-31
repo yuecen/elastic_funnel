@@ -14,7 +14,7 @@ In order to run elastic_funnel, some works have to prepare.
 
 ### Install
 
-  ** [Pandas] is one of core requirements and it could take a few minutes to complete. **
+[Pandas] is one of core requirements and it could take a few minutes to complete.
 
 ```
 pip install elastic_funnel
@@ -37,15 +37,13 @@ stage = state
 identity = sessionid
 ```
 
-#### Run for a Funnel
+### Run for a Funnel
 
 ```
 elastic_funnel --stages landingpage login searchpage --start 2016-03-25T00:00:00
 ```
 
-#### Funnel Visualization with ASCII Characters
-
-You could get a response looks like follows, the percentage means trend from one stage to the next one.
+You could get a visualization with ASCII characters looks like follows, the percentage means trend from one stage to the next one.
 
 ```
 Funnel: landingpage --> login --> searchpage
@@ -55,7 +53,7 @@ Funnel: landingpage --> login --> searchpage
 █                                                    1          12.5%   searchpage
 ```
 
-#### Arguments
+### Arguments
 
 ```
 usage: elastic_funnel [-h] [--host HOST] [--port PORT] [--index INDEX]
