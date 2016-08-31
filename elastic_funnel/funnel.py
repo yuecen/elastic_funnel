@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
 from ascii_graph import Pyasciigraph
-from elasticsearch_data import LogData, es_identity, es_fields
+from dateutil import parser
+from elasticsearch_data import LogData, es_identity, es_fields, es_timefield
+import pandas as pd
+
 
 pd.set_option('display.width', 1000)
+
+IDLE_TIME = 36
 
 
 def ascii_funnel(info, funnel_data):
@@ -26,10 +30,20 @@ def ascii_funnel(info, funnel_data):
 class Stage(object):
     def __init__(self, total=0, flag=False, name=None):
         self.total = total
-        self.flag = flag
         # name -> {"state_name": "index"}
         self.name = name
         self.trend = 0.0
+        self.flag = flag
+        # flag usually go with last_record_time
+        self.last_record_time = None
+
+
+def is_idle(last_time, current_time,):
+    between_time = (parser.parse(current_time) - parser.parse(last_time)).total_seconds()
+    if between_time > IDLE_TIME:
+        return True
+    else:
+        return False
 
 
 class FunnelData(LogData):
@@ -80,7 +94,7 @@ class FunnelData(LogData):
 
             # Select data set by browser_id
             user_data_set = self.dataframe.loc[self.dataframe[es_identity] == browser_id]
-            (self.stages[0]).flag = True
+
             for index, record in user_data_set.iterrows():
                 self._calculate(record)
 
@@ -97,6 +111,10 @@ class FunnelData(LogData):
             action                                state_change
             state                                   searchpage
         """
+        # init
+        (self.stages[0]).flag = True
+        (self.stages[0]).last_record_time = record[es_timefield]
+
         stage_idx = 0
         while stage_idx < len(self.stages):
             # Search flag using while loop
@@ -110,20 +128,27 @@ class FunnelData(LogData):
 
                 # Match!!
                 if stage_val == record_stage_val:
-                    (self.stages[stage_idx]).total += 1
+                    # Check time period for idle gap
+                    # Update the current stage info
+                    if is_idle((self.stages[stage_idx]).last_record_time, record[es_timefield]) is False:
+                        (self.stages[stage_idx]).total += 1
                     (self.stages[stage_idx]).flag = False
+
                     if (stage_idx + 1) >= len(self.stages):
                         # Restart a traversal
                         (self.stages[0]).flag = True
+                        (self.stages[0]).last_record_time = record[es_timefield]
                     else:
-                        # Go to next stage for a check
+                        # Always set for starting the next stage
                         (self.stages[stage_idx + 1]).flag = True
+                        (self.stages[stage_idx + 1]).last_record_time = record[es_timefield]
                     break
                 else:
                     # Mismatched, set current stage into False,
                     # and set first stage is True for restart a traversal.
                     (self.stages[stage_idx]).flag = False
                     (self.stages[0]).flag = True
+                    (self.stages[0]).last_record_time = record[es_timefield]
 
                     # Although current record stage don't match current stage,
                     # it still can compare with the first stage for traversal.
@@ -131,9 +156,15 @@ class FunnelData(LogData):
 
                     # Match!!
                     if first_stage_val == record_stage_val:
-                        (self.stages[0]).total += 1
+                        # Check time period for idle gap
+                        # Update the current stage info
+                        if is_idle((self.stages[stage_idx]).last_record_time, record[es_timefield]) is False:
+                            (self.stages[0]).total += 1
                         (self.stages[0]).flag = False
+
+                        # Always set for starting the next stage
                         (self.stages[1]).flag = True
+                        (self.stages[1]).last_record_time = record[es_timefield]
                         break
 
             stage_idx += 1
