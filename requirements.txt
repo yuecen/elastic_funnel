@@ -3,7 +3,7 @@ Flask==0.10.1
 Jinja2==2.8
 MarkupSafe==0.23
 Pygments==2.1.3
-Werkzeug==0.11.5
+Werkzeug==0.15.3
 alabaster==0.7.7
 ascii-graph==1.1.4
 docutils==0.12
