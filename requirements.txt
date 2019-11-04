@@ -1,5 +1,5 @@
 Babel==2.2.0
-Flask==0.10.1
+Flask==1.0
 Jinja2==2.8
 MarkupSafe==0.23
 Pygments==2.1.3
