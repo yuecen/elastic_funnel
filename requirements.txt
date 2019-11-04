@@ -8,7 +8,7 @@ alabaster==0.7.7
 ascii-graph==1.1.4
 docutils==0.12
 elasticsearch==2.3.0
-gunicorn==19.4.5
+gunicorn==19.5.0
 itsdangerous==0.24
 numpy==1.10.4
 pandas==0.18.0
