@@ -10,7 +10,7 @@ docutils==0.12
 elasticsearch==2.3.0
 gunicorn==19.4.5
 itsdangerous==0.24
-numpy==1.10.4
+numpy==1.21.0
 pandas==0.18.0
 python-dateutil==2.5.1
 pytz==2016.2
